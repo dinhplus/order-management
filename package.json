@@ -1,0 +1,37 @@
+{
+  "name": "order-management",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Inventory & Order Management System",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "./start.sh",
+    "dev:backend": "npm run start:dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "build:backend": "npm run build -w backend",
+    "build:frontend": "npm run build -w frontend",
+    "start": "npm run start:prod -w backend",
+    "test": "npm run test -w backend",
+    "test:cov": "npm run test:cov -w backend",
+    "test:e2e": "npm run test:e2e -w backend",
+    "lint": "npm run lint -w backend && npm run lint -w frontend",
+    "lint:backend": "npm run lint -w backend",
+    "lint:frontend": "npm run lint -w frontend",
+    "format": "npm run format -w backend",
+    "db:start": "docker compose up -d postgres",
+    "db:stop": "docker compose stop postgres",
+    "db:reset": "docker compose down -v && npm run db:start",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:reset": "docker compose down -v && docker compose up -d --build",
+    "generate:spec": "npm run generate:spec -w backend",
+    "generate:types": "npm run generate:spec -w backend && npm run generate:types -w frontend"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}
