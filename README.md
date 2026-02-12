@@ -407,17 +407,16 @@ npm run dev:backend
 - **`synchronize: true` in dev only**: TypeORM auto-syncs schema in development. Production uses migrations (`migrationsRun: true`).
 - **JWT secret in `.env`**: In production, use a proper secrets manager.
 - **No refresh tokens**: Single JWT with 1-day expiry. Production should implement refresh token rotation.
-- **No rate limiting**: Add `@nestjs/throttler` for production.
 
 ## Production Readiness Checklist
 
 - [x] Replace `synchronize: true` with TypeORM migrations
 - [x] Configure CORS with specific allowed origins
 - [x] Implement structured logging (nestjs-pino with correlation ID)
+- [x] Add rate limiting (`@nestjs/throttler` — 60 requests/minute)
+- [x] Add health check endpoint (`/api/health`)
+- [x] Add Helmet.js for security headers
 - [ ] Implement refresh token mechanism
-- [ ] Add rate limiting (`@nestjs/throttler`)
 - [ ] Use proper secrets management (Vault, AWS Secrets Manager)
-- [ ] Add health check endpoint
 - [ ] Set up CI/CD pipeline
 - [ ] Add integration/e2e tests
-- [ ] Add Helmet.js for security headers

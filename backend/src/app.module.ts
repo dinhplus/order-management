@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import type { IncomingMessage } from 'http';
 import { AuthModule } from '@modules/auth/auth.module';
 import { UsersModule } from '@modules/users/users.module';
 import { ProductsModule } from '@modules/products/products.module';
 import { OrdersModule } from '@modules/orders/orders.module';
+import { HealthModule } from '@modules/health/health.module';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@common/guards/roles.guard';
 import { HttpExceptionFilter } from '@common/filters/http-exception.filter';
@@ -52,10 +54,14 @@ import { HttpExceptionFilter } from '@common/filters/http-exception.filter';
         migrationsRun: config.get<string>('NODE_ENV', 'development') === 'production',
       }),
     }),
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 60_000, limit: 60 }],
+    }),
     AuthModule,
     UsersModule,
     ProductsModule,
     OrdersModule,
+    HealthModule,
   ],
   providers: [
     {
@@ -69,6 +75,10 @@ import { HttpExceptionFilter } from '@common/filters/http-exception.filter';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })

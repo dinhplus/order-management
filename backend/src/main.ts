@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from '@common/interceptors/transform.interceptor';
 import { seed } from '@database/seeds/seed';
@@ -12,6 +13,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(Logger));
 
+  app.use(helmet());
   app.setGlobalPrefix('api');
 
   const configService = app.get(ConfigService);

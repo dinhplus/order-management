@@ -129,14 +129,31 @@ export interface paths {
         patch: operations["OrdersController_updateStatus"];
         trace?: never;
     };
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Application health check */
+        get: operations["HealthController_check"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         LoginDto: {
-            /** @example manager */
+            /** @example username */
             username: string;
-            /** @example password123 */
+            /** @example password */
             password: string;
         };
         CreateProductDto: {
@@ -156,32 +173,6 @@ export interface components {
              * @example 100
              */
             inventoryCount: number;
-        };
-        Product: {
-            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
-            id: string;
-            /** @example Wireless Mouse */
-            name: string;
-            /** @example WM-001 */
-            sku: string;
-            /** @example 29.99 */
-            price: number;
-            /**
-             * @example active
-             * @enum {string}
-             */
-            status: "active" | "inactive";
-            /** @example 100 */
-            inventoryCount: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            /**
-             * @description Version number for optimistic locking
-             * @example 1
-             */
-            version: number;
         };
         UpdateProductDto: {
             /** @example Wireless Mouse */
@@ -224,52 +215,6 @@ export interface components {
              */
             idempotencyKey?: string;
             items: components["schemas"]["CreateOrderItemDto"][];
-        };
-        Order: {
-            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
-            id: string;
-            /** @example ORD-20260211-ABC123 */
-            orderNumber: string;
-            /**
-             * @description Client-provided key to prevent duplicate order creation
-             * @example client-generated-uuid
-             */
-            idempotencyKey?: string | null;
-            /** @example John Doe */
-            customerRef: string;
-            /**
-             * @example pending
-             * @enum {string}
-             */
-            status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
-            /** @example 59.98 */
-            totalAmount: number;
-            items: components["schemas"]["OrderItem"][];
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            /**
-             * @description Version number for optimistic locking
-             * @example 1
-             */
-            version: number;
-        };
-        OrderItem: {
-            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
-            id: string;
-            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
-            orderId: string;
-            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
-            productId: string;
-            /** @example 2 */
-            quantity: number;
-            /** @example 29.99 */
-            unitPrice: number;
-            /** @example 59.98 */
-            subtotal: number;
-            product: components["schemas"]["Product"];
-            order: components["schemas"]["Order"];
         };
         UpdateOrderDto: {
             /** @example CUST-002 */
@@ -314,7 +259,35 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Login successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid credentials */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -339,6 +312,13 @@ export interface operations {
                     "application/json": Record<string, never>;
                 };
             };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     ProductsController_findAll: {
@@ -362,6 +342,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     ProductsController_create: {
@@ -377,13 +364,40 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Product created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["Product"];
+                content?: never;
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
                 };
+                content?: never;
+            };
+            /** @description Forbidden — Manager only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Duplicate SKU */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -398,13 +412,26 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Product found */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["Product"];
+                content?: never;
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
                 };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -419,7 +446,29 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Product deleted */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden — Manager only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -442,13 +491,47 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Product updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["Product"];
+                content?: never;
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
                 };
+                content?: never;
+            };
+            /** @description Forbidden — Manager only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Version conflict (optimistic locking) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -473,6 +556,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     OrdersController_create: {
@@ -488,13 +578,40 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Order created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["Order"];
+                content?: never;
+            };
+            /** @description Validation error or insufficient inventory */
+            400: {
+                headers: {
+                    [name: string]: unknown;
                 };
+                content?: never;
+            };
+            /** @description Forbidden — Manager only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Duplicate idempotency key */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -509,13 +626,26 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Order found */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["Order"];
+                content?: never;
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
                 };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -530,7 +660,29 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Order deleted */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden — Manager only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -553,13 +705,47 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Order updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["Order"];
+                content?: never;
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
                 };
+                content?: never;
+            };
+            /** @description Forbidden — Manager only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Version conflict (optimistic locking) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -578,12 +764,171 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Status updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid status transition or insufficient inventory */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden — Cancel requires Manager */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Version conflict (optimistic locking) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthController_check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The Health Check is successful */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Order"];
+                    "application/json": {
+                        /** @example ok */
+                        status?: string;
+                        /**
+                         * @example {
+                         *       "database": {
+                         *         "status": "up"
+                         *       }
+                         *     }
+                         */
+                        info?: {
+                            [key: string]: {
+                                status: string;
+                            } & {
+                                [key: string]: unknown;
+                            };
+                        } | null;
+                        /** @example {} */
+                        error?: {
+                            [key: string]: {
+                                status: string;
+                            } & {
+                                [key: string]: unknown;
+                            };
+                        } | null;
+                        /**
+                         * @example {
+                         *       "database": {
+                         *         "status": "up"
+                         *       }
+                         *     }
+                         */
+                        details?: {
+                            [key: string]: {
+                                status: string;
+                            } & {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+            /** @description Too many requests. Please try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The Health Check is not successful */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example error */
+                        status?: string;
+                        /**
+                         * @example {
+                         *       "database": {
+                         *         "status": "up"
+                         *       }
+                         *     }
+                         */
+                        info?: {
+                            [key: string]: {
+                                status: string;
+                            } & {
+                                [key: string]: unknown;
+                            };
+                        } | null;
+                        /**
+                         * @example {
+                         *       "redis": {
+                         *         "status": "down",
+                         *         "message": "Could not connect"
+                         *       }
+                         *     }
+                         */
+                        error?: {
+                            [key: string]: {
+                                status: string;
+                            } & {
+                                [key: string]: unknown;
+                            };
+                        } | null;
+                        /**
+                         * @example {
+                         *       "database": {
+                         *         "status": "up"
+                         *       },
+                         *       "redis": {
+                         *         "status": "down",
+                         *         "message": "Could not connect"
+                         *       }
+                         *     }
+                         */
+                        details?: {
+                            [key: string]: {
+                                status: string;
+                            } & {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
                 };
             };
         };
