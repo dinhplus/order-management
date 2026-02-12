@@ -237,6 +237,78 @@ export interface components {
              */
             version: number;
         };
+        Product: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example Wireless Mouse */
+            name: string;
+            /** @example WM-001 */
+            sku: string;
+            /** @example 29.99 */
+            price: number;
+            /**
+             * @example active
+             * @enum {string}
+             */
+            status: "active" | "inactive";
+            /** @example 100 */
+            inventoryCount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /**
+             * @description Version number for optimistic locking
+             * @example 1
+             */
+            version: number;
+        };
+        Order: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example ORD-20260211-ABC123 */
+            orderNumber: string;
+            /**
+             * @description Client-provided key to prevent duplicate order creation
+             * @example client-generated-uuid
+             */
+            idempotencyKey?: string | null;
+            /** @example John Doe */
+            customerRef: string;
+            /**
+             * @example pending
+             * @enum {string}
+             */
+            status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+            /** @example 59.98 */
+            totalAmount: number;
+            items: components["schemas"]["OrderItem"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /**
+             * @description Version number for optimistic locking
+             * @example 1
+             */
+            version: number;
+        };
+        OrderItem: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            orderId: string;
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            productId: string;
+            /** @example 2 */
+            quantity: number;
+            /** @example 29.99 */
+            unitPrice: number;
+            /** @example 59.98 */
+            subtotal: number;
+            product: components["schemas"]["Product"];
+            order: components["schemas"]["Order"];
+        };
     };
     responses: never;
     parameters: never;

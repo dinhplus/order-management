@@ -10,8 +10,8 @@ export const OrderCreate = () => {
 
   const { selectProps: productSelectProps } = useSelect<IProduct>({
     resource: 'products',
-    optionLabel: 'name',
-    optionValue: 'id',
+    optionLabel: (item) => item.name,
+    optionValue: (item) => item.id,
     filters: [{ field: 'status', operator: 'eq', value: 'active' }],
   });
 
